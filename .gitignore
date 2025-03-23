@@ -1,0 +1,6 @@
+.svn/
+node_modules/
+js/
+katex/
+*.lock
+main.exe

@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "build": "bun script/build.js",
+    "buildZip": "bun script/build-zip.js",
+    "buildExe": "bun build --compile --minify  script/server.js --bytecode --outfile main && bun script/build-zip.js",
+    "server": "bun script/server.js",
+    "test": "bun test/test.js"
+  },
+  "dependencies": {
+    "katex": "^0.16.21",
+    "marked": "^15.0.7",
+    "ollama": "^0.5.14"
+  },
+  "devDependencies": {
+    "adm-zip": "^0.5.16"
+  }
+}

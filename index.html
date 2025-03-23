@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="txt/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <title>Ollama管理</title>
+    <link href="./css/base.css" rel="stylesheet">
+    <link href="./katex/katex.min.css" rel="stylesheet">
+    <style>
+        #logPanel>div {
+            padding: 6px;
+            border: 1px solid;
+            margin-top: 6px;
+        }
+
+        #logPanel .time {
+            margin-right: 6px;
+        }
+        textarea{
+            width: calc(100% - 6px);
+        }
+        table {
+            border-collapse: collapse;
+            border: 1px solid;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        table th,
+        table td {
+            border: 1px solid;
+            padding: 6px;
+        }
+
+        table th {
+            background: black;
+            border-color: #111;
+            position: sticky;
+            top: 0;
+        }
+
+        table th>span {
+            color: white;
+            font-weight: bold;
+        }
+
+        tbody>tr:nth-of-type(even) {
+            background-color: lavender;
+        }
+
+        #showModelPanel summary {
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+
+        #showModelPanel details>div {
+            color: blue;
+        }
+
+        #showModelPanel .flex>div {
+            border: 1px solid lightgrey;
+            padding: 3px;
+        }
+
+        #showModelPanel .value,
+        #embedResultText .value {
+            background: lightgrey;
+        }
+
+        #chatViewPanel {
+            border: 1px solid grey;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #eaeaea;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-my,
+        .message {
+            margin: 6px;
+            background-color: white;
+            padding: 6px;
+            width: fit-content;
+        }
+
+        .message-name {
+            font-weight: bold;
+        }
+
+        .message-time,
+        .message-tips {
+            font-size: small;
+            color: grey;
+            margin-left: 6px;
+        }
+
+        .message-content {
+            color: blue;
+        }
+
+        .message-at {
+            color: blueviolet;
+            margin-right: 3px;
+        }
+
+        .message-at::before {
+            content: '@';
+        }
+
+        .message-my {
+            align-self: flex-end;
+        }
+        .message-content pre {
+            background-color: lightcyan;
+        }
+    </style>
+</head>
+
+<body>
+    <details>
+        <summary>Ollama地址</summary>
+        <div>
+            <label>服务地址<input id="urlText" placeholder="http://localhost:11434" type="url" /></label><span
+                class="badge">必须</span>
+        </div>
+        <div>
+            <button id="setUrlBtn">确定</button><button id="abortAllBtn">终止全部请求</button>
+        </div>
+    </details>
+    <details>
+        <summary>模型列表</summary>
+        <div>
+            <button id="modelListBtn">刷新</button>
+        </div>
+        <div id="modelListLabelText"></div>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th><span>名称</span></th>
+                        <th><span>族群</span></th>
+                        <th><span>参数大小</span></th>
+                        <th><span>文件大小</span></th>
+                        <th><span>格式</span></th>
+                        <th><span>量化级别</span></th>
+                        <th><span>更新时间</span></th>
+                        <th><span>状态</span></th>
+                        <th><span>操作</span></th>
+                    </tr>
+                </thead>
+                <tbody id="modelListPanel">
+
+                </tbody>
+            </table>
+        </div>
+    </details>
+    <details>
+        <summary>模型下载</summary>
+        <div>
+            <div>
+                <label>模型名称<input id="downModelNameText" value="qwen2.5-coder:0.5b" type="text" /></label><span
+                    class="badge">必须</span>
+            </div>
+            <div>
+                <label>是否允许未经验证的模型</label><span class="badge">可选</span>
+            </div>
+            <div>
+                <label><input checked name="downModelInsecureCheck" value="" type="radio" />默认</label>
+                <label><input name="downModelInsecureCheck" value="true" type="radio" />是</label>
+                <label><input name="downModelInsecureCheck" value="false" type="radio" />否</label>
+            </div>
+            <div>
+                <button id="downModelBtn">确定</button>
+            </div>
+        </div>
+    </details>
+    <details id="showModelContainer">
+        <summary>模型详情</summary>
+        <div>
+            <div>
+                <label>模型名称<select id="showModelNameText"></select></label><span class="badge">必须</span>
+            </div>
+            <div>
+                <button id="showModelBtn">确定</button>
+            </div>
+            <div id="showModelPanel">
+
+            </div>
+        </div>
+    </details>
+    <details>
+        <summary>向量化距离</summary>
+        <div>
+            <div>
+                <label>模型名称<select id="embedModelNameText"></select></label><span class="badge">必须</span>
+            </div>
+            <div>内容1<span class="badge">必须</span></div>
+            <div>
+                <textarea id="embedContent1Text">今天天气怎么样</textarea>
+            </div>
+            <div>内容2<span class="badge">必须</span></div>
+            <div>
+                <textarea id="embedContent2Text">今天天气情况</textarea>
+            </div>
+            <div>
+                <button id="embedDistanceBtn">计算距离</button>
+            </div>
+            <div id="embedResultText"></div>
+        </div>
+    </details>
+    <details>
+        <summary>知识库</summary>
+        <div> 
+            <div>
+                <label>模型名称<select id="knowledgeModelNameText"></select></label><span class="badge">必须</span>
+            </div>
+            <div><label>输入文件<input id="knowledgeFileInput" accept=".txt" type="file" /></label><button
+                    id="knowledgeFileClearBtn">删除</button><span class="badge">二选一</span></div>
+            <div>输入内容<span class="badge">二选一</span></div>
+            <div>
+                <textarea id="knowledgeContentText">这是一段内容</textarea>
+            </div>
+            <div>分割</div>
+            <div>
+                <label><input checked name="knowledgeSplit" value="no" type="radio" />不分割</label>
+                <label><input name="knowledgeSplit" value="line" type="radio" />换行分割</label>
+                <label><input name="knowledgeSplit" value="size" type="radio" />分割长度<input type="number"
+                        id="knowledgeSplitSizeText" min="1" value="1024" /></label>
+            </div>
+            <div>提示语句<span class="badge">必须</span></div>
+            <div>
+                <textarea placeholder="${knowledge}为替换内容" id="knowledgePromptText"></textarea>
+            </div>  
+            <div>
+                <button id="knowledgeAddBtn">添加</button><button id="knowledgeClearBtn">清空</button><button id="knowledgeSetPromptBtn">设置提示语句</button>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr> 
+                            <th><span>模型</span></th>
+                            <th><span>内容长度</span></th>
+                            <th><span>向量长度</span></th>
+                            <th><span>内容预览</span></th>  
+                            <th><span>操作</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="knowledgeListPanel">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </details>
+    <details open id="chatContainer">
+        <summary>对话</summary>
+        <div>
+            <div>
+                <label>模型名称<select id="chatModelNameText"></select></label><span class="badge">必须</span>
+            </div>
+            <div>输出内容</div>
+            <div id="chatViewPanel">
+
+            </div>
+            <div>输入内容<span class="badge">必须</span></div>
+            <div>
+                <textarea id="chatContentText">你是谁</textarea>
+            </div>
+            <div>
+                <label>文件<input id="chatFileInput" accept="image/*" type="file" /></label><button id="chatFileClearBtn">删除</button><span class="badge">可选</span>
+            </div>
+            <div>
+                <label><input type="checkbox" id="chatGenerateCheck" />使用生成</label>
+                <label><input type="checkbox" id="chatKnowledgeCheck" />使用知识库<select id="chatKnowledgeModeNameText"></select></label>
+            </div>
+            <div>
+                <button id="chatSendBtn">确定</button><button id="chatClearBtn">清空</button>
+            </div>
+        </div>
+    </details>
+    <details>
+        <summary>日志</summary>
+        <div id="logPanel">
+
+        </div>
+    </details>
+</body>
+<script type="text/javascript" src="./js/index.js"></script>
+
+</html>

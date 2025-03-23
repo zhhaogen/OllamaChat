@@ -1,0 +1,54 @@
+details summary {
+    cursor: pointer;
+}
+
+details {
+    border: 1px solid gray;
+    margin-top: 6px;
+    padding: 6px;
+}
+
+.badge {
+    border: 1px solid lightgrey;
+    border-radius: 4rem;
+    font-size: 0.7rem;
+    padding: .125rem .375rem;
+    margin-left: 0.2rem;
+    color: grey;
+}
+
+.time {
+    background: gray;
+    color: snow;
+    padding: 0 3px;
+}
+
+.info {
+    color: #31bdec;
+}
+
+.warn {
+    color: #ffb800;
+}
+
+.error {
+    color: #ff5722;
+}
+
+.flex {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.key{
+    color: black;
+    font-weight: bold;
+}
+.key::after{
+    content: ':'; 
+    color: grey;
+}
+.value{
+    color: blue;
+    margin-right: 3px;
+}
