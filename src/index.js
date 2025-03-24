@@ -3,6 +3,7 @@ import { fixUrl, formateDateTime, formatFileSize, getRadioValue, addKeyValue, ca
 import { ProcessPanel } from "./process-panel";
 import { LogPanel } from "./log-panel";
 import { ChatPanel } from "./chat-panel";
+import {showTab, showTabByTitle} from "./tabs";
 
 /**
  * @type {HTMLInputElement}
@@ -191,7 +192,8 @@ async function doDownModel() {
     } else if (insecure == "false") {
         request.insecure = true;
     }
-
+    showTabByTitle("日志");
+    
     let processPanel = new ProcessPanel(logPanel);
     processPanel.setTitle("下载模型[" + model + "]");
 
@@ -299,10 +301,10 @@ async function doListModel() {
         showBtnEle.innerText = "详情";
         tdEle.appendChild(showBtnEle);
         showBtnEle.addEventListener("click", async () => {
+            showTabByTitle("模型详情");
+
             let modelName = model.name;
-            showModelNameText.value = modelName;
-            showModelContainer.open = true;
-            showModelPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+            showModelNameText.value = modelName; 
             _doShowModel(modelName);
         });
         //复制
@@ -337,6 +339,8 @@ async function doListModel() {
         tdEle.appendChild(updateBtnEle);
         updateBtnEle.addEventListener("click", async () => {
             let modelName = model.name;
+            showTabByTitle("日志");
+
             let processPanel = new ProcessPanel(logPanel);
             processPanel.setTitle("更新模型[" + modelName + "]");
             try {
@@ -354,9 +358,8 @@ async function doListModel() {
         tdEle.appendChild(chatBtnEle);
         chatBtnEle.addEventListener("click", async () => {
             let modelName = model.name;
-            chatModelNameText.value = modelName;
-            chatContainer.open = true;
-            chatViewPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+            chatModelNameText.value = modelName; 
+            showTabByTitle("对话");
         });
     }
 

@@ -7,6 +7,8 @@
     <title>Ollama管理</title>
     <link href="./css/base.css" rel="stylesheet">
     <link href="./katex/katex.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" sizes="16x16 32x32 48x48" href="icons/icon32.png">
     <style>
         #logPanel>div {
             padding: 6px;
@@ -22,8 +24,7 @@
         }
         table {
             border-collapse: collapse;
-            border: 1px solid;
-            max-height: 600px;
+            border: 1px solid; 
             overflow-y: auto;
         }
 
@@ -70,13 +71,13 @@
         }
 
         #chatViewPanel {
-            border: 1px solid grey;
-            max-height: 300px;
+            border: 1px solid grey; 
             overflow-y: auto;
             background-color: #eaeaea;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            min-height: 50px;
         }
 
         .message-my,
@@ -117,22 +118,63 @@
         .message-content pre {
             background-color: lightcyan;
         }
+        #tabsPanel{
+            display: flex;
+            gap: 10px; 
+            flex-wrap: wrap;
+        }
+        #tabsPanel>div{
+            border: 1px solid grey;
+            padding: 3px 6px;
+            cursor: pointer;
+        }
+        #tabsPanel>div.ativite,#tabsPanel>div:hover{
+            font-weight: bold;
+            border: 1px solid black;
+        }
+        .tabContent{
+            display: none; 
+        } 
+        .tabContent.ativite{
+            display: block;
+        }
+        .tabContent>h2{
+            display: none; 
+        }
     </style>
 </head>
 
 <body>
-    <details>
-        <summary>Ollama地址</summary>
+    <header id="tabsPanel"> 
+    </header> 
+    <div class="tabContent" id="chatContainer">
+        <h2>对话</h2>
         <div>
-            <label>服务地址<input id="urlText" placeholder="http://localhost:11434" type="url" /></label><span
-                class="badge">必须</span>
+            <div>
+                <label>模型名称<select id="chatModelNameText"></select></label><span class="badge">必须</span>
+            </div>
+            <div>输出内容</div>
+            <div id="chatViewPanel">
+
+            </div>
+            <div>输入内容<span class="badge">必须</span></div>
+            <div>
+                <textarea id="chatContentText">你是谁</textarea>
+            </div>
+            <div>
+                <label>文件<input id="chatFileInput" accept="image/*" type="file" /></label><button id="chatFileClearBtn">删除</button><span class="badge">可选</span>
+            </div>
+            <div>
+                <label><input type="checkbox" id="chatGenerateCheck" />使用生成</label>
+                <label><input type="checkbox" id="chatKnowledgeCheck" />使用知识库<select id="chatKnowledgeModeNameText"></select></label>
+            </div>
+            <div>
+                <button id="chatSendBtn">确定</button><button id="chatClearBtn">清空</button>
+            </div>
         </div>
-        <div>
-            <button id="setUrlBtn">确定</button><button id="abortAllBtn">终止全部请求</button>
-        </div>
-    </details>
-    <details>
-        <summary>模型列表</summary>
+    </div>
+    <div class="tabContent">
+        <h2>模型列表</h2>
         <div>
             <button id="modelListBtn">刷新</button>
         </div>
@@ -157,16 +199,16 @@
                 </tbody>
             </table>
         </div>
-    </details>
-    <details>
-        <summary>模型下载</summary>
+    </div>
+    <div class="tabContent">
+        <h2>模型下载</h2>
         <div>
             <div>
                 <label>模型名称<input id="downModelNameText" value="qwen2.5-coder:0.5b" type="text" /></label><span
                     class="badge">必须</span>
             </div>
             <div>
-                <label>是否允许未经验证的模型</label><span class="badge">可选</span>
+                是否允许未经验证的模型<span class="badge">可选</span>
             </div>
             <div>
                 <label><input checked name="downModelInsecureCheck" value="" type="radio" />默认</label>
@@ -177,9 +219,9 @@
                 <button id="downModelBtn">确定</button>
             </div>
         </div>
-    </details>
-    <details id="showModelContainer">
-        <summary>模型详情</summary>
+    </div>
+    <div class="tabContent" id="showModelContainer">
+        <h2>模型详情</h2>
         <div>
             <div>
                 <label>模型名称<select id="showModelNameText"></select></label><span class="badge">必须</span>
@@ -191,9 +233,9 @@
 
             </div>
         </div>
-    </details>
-    <details>
-        <summary>向量化距离</summary>
+    </div>
+    <div class="tabContent">
+        <h2>向量化距离</h2>
         <div>
             <div>
                 <label>模型名称<select id="embedModelNameText"></select></label><span class="badge">必须</span>
@@ -211,9 +253,9 @@
             </div>
             <div id="embedResultText"></div>
         </div>
-    </details>
-    <details>
-        <summary>知识库</summary>
+    </div>
+    <div class="tabContent">
+        <h2>知识库</h2>
         <div> 
             <div>
                 <label>模型名称<select id="knowledgeModelNameText"></select></label><span class="badge">必须</span>
@@ -255,39 +297,23 @@
                 </table>
             </div>
         </div>
-    </details>
-    <details open id="chatContainer">
-        <summary>对话</summary>
+    </div>
+    <div class="tabContent">
+        <h2>设置</h2>
         <div>
-            <div>
-                <label>模型名称<select id="chatModelNameText"></select></label><span class="badge">必须</span>
-            </div>
-            <div>输出内容</div>
-            <div id="chatViewPanel">
-
-            </div>
-            <div>输入内容<span class="badge">必须</span></div>
-            <div>
-                <textarea id="chatContentText">你是谁</textarea>
-            </div>
-            <div>
-                <label>文件<input id="chatFileInput" accept="image/*" type="file" /></label><button id="chatFileClearBtn">删除</button><span class="badge">可选</span>
-            </div>
-            <div>
-                <label><input type="checkbox" id="chatGenerateCheck" />使用生成</label>
-                <label><input type="checkbox" id="chatKnowledgeCheck" />使用知识库<select id="chatKnowledgeModeNameText"></select></label>
-            </div>
-            <div>
-                <button id="chatSendBtn">确定</button><button id="chatClearBtn">清空</button>
-            </div>
+            <label>ollama地址<input id="urlText" placeholder="http://localhost:11434" type="url" /></label><span
+                class="badge">必须</span>
         </div>
-    </details>
-    <details>
-        <summary>日志</summary>
+        <div>
+            <button id="setUrlBtn">确定</button><button id="abortAllBtn">终止全部请求</button>
+        </div>
+    </div>
+    <div class="tabContent">
+        <h2>日志</h2>
         <div id="logPanel">
 
         </div>
-    </details>
+    </div>
 </body>
 <script type="text/javascript" src="./js/index.js"></script>
 

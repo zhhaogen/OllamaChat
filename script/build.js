@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import {build} from "bun";
 //复制Katex
 function copyKatex(){
     let distDir="./katex";
@@ -14,7 +15,7 @@ function copyKatex(){
     fs.cpSync(sourceDir+"/fonts",distDir+"/fonts",{recursive:true});
 }
 copyKatex();
-await Bun.build({
+await build({
     entrypoints: ["./src/index.js"],
     outdir: "./js",
     sourcemap: "linked",

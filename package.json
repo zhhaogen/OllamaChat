@@ -2,8 +2,8 @@
   "scripts": {
     "build": "bun script/build.js",
     "buildZip": "bun script/build-zip.js",
-    "buildExe": "bun build --compile --minify  script/server.js --bytecode --outfile main && bun script/build-zip.js",
-    "server": "bun script/server.js",
+    "buildExe": "bun script/build-zip.js && bun build --compile --minify  script/build-exe.js --outfile main",
+    "server": "bun index.html",
     "test": "bun test/test.js"
   },
   "dependencies": {

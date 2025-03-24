@@ -1,7 +1,7 @@
 import AdmZip from "adm-zip";
 import fs from "node:fs";
 /**打包忽略这些文件 */
-const ignoreFileNames=["node_modules","bun.lock","package.json","www.zip","src","test","script"];
+const ignoreFileNames=["node_modules","bun.lock","package.json","www.zip","src","test","script","main","main.exe"];
 
 let zipFile=new AdmZip();
 let subFileNames=fs.readdirSync("./");
