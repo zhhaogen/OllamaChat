@@ -36,7 +36,7 @@
                 },
                 {
                     "name":"打包windows-x64可执行程序",
-                    "run": "bun build --compile --minify  script/build-exe.js --outfile main-linux-arm64 --target=bun-windows-x64"
+                    "run": "bun build --compile --minify  script/build-exe.js --outfile main-windows-x64 --target=bun-windows-x64"
                 },
                 {
                     "run": "ls ."
@@ -46,7 +46,7 @@
                     "if":"startsWith(github.ref, 'refs/tags/')",
                     "with":{
                         "body":"自动打包",
-                        "files":"./www.zip"
+                        "files":"./www.zip\nmain-linux-x64\nmain-linux-arm64\nmain-windows-x64.exe"
                     }
                 },
                 {
